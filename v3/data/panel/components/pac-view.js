@@ -34,7 +34,7 @@ class PacView extends HTMLElement {
         }
         .one {
           display: grid;
-          grid-template-columns: 1fr 40px min-content 40px 40px;
+          grid-template-columns: 1fr min-content min-content 40px 40px;
         }
         label {
           cursor: pointer;
@@ -45,7 +45,14 @@ class PacView extends HTMLElement {
         input[type=button] {
           padding: 8px 5px;
           border: none;
+        }
+        input[type=text] {
           outline: none;
+        }
+        input[type=text]:focus,
+        input[type=submit]:focus,
+        input[type=button]:focus {
+          z-index: 1;
         }
         input[type=radio] {
           margin: 5px;
@@ -61,9 +68,15 @@ class PacView extends HTMLElement {
         #href {
           background-color: #f0f0f0;
         }
+        #convert {
+          color: #fff;
+          background-color: #6e98e3;
+          padding-inline: 5px;
+        }
         #reload {
-          background: #f0f0f0 url(images/reload.svg) center center no-repeat;
-          background-size: 14px;
+          color: #fff;
+          background-color: #c66ee3;
+          padding-inline: 5px;
         }
         #href:focus {
           background-color: #c0e7ff;
@@ -71,10 +84,6 @@ class PacView extends HTMLElement {
         #apply {
           background: #52af52 url(images/ok.svg) center center no-repeat;
           background-size: 14px;
-        }
-        #convert {
-          color: #fff;
-          background-color: #6e98e3;
         }
         #remove {
           background: #eea345 url(images/no.svg) center center no-repeat;
@@ -95,8 +104,8 @@ class PacView extends HTMLElement {
         <label><input id="pac-1" type="radio" name="pac" checked value="href" data-mode="pac_script">URL</label>
         <form class="one" id="href-container">
           <input type="text" id="href" placeholder="http://example.com/sample.pac" for="pac-1" list="pacs" autocomplete="off" data-value="" value="">
-          <input type="button" id="reload" data-cmd="reload-pac" title="Force browser to reload from server">
-          <input type="button" id="convert" data-cmd="convert-to-script" value="convert" title="Convert to Script">
+          <input type="button" id="reload" data-cmd="reload-pac" value="Reload" title="Force browser to read script from server" accesskey="r">
+          <input type="button" id="convert" data-cmd="convert-to-script" value="convert" title="Convert server to inline PAC script. Use if server is unstable or address may change." accesskey="c">
           <input type="button" id="remove" disabled="true" data-cmd="delete-pac">
           <input type="submit" id="apply" disabled="true" value="">
         </form>
@@ -217,7 +226,7 @@ class PacView extends HTMLElement {
       }
       const pacScript = await r.text();
       this.set('script', pacScript, true);
-      console.log(pacScript);
+      this.shadowRoot.getElementById('pac-2').dispatchEvent(new Event('change'));
     }
     catch (e) {
       console.error(e);
@@ -252,7 +261,6 @@ class PacView extends HTMLElement {
         prefs.pacs = prefs.pacs.filter((p, i, l) => p && l.indexOf(p) === i);
         chrome.storage.local.set(prefs, () => {
           href.dispatchEvent(new Event('keyup'));
-          console.log('done');
           app.emit('change-proxy', 'pac_script');
           this.build();
         });

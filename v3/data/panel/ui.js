@@ -1,4 +1,4 @@
-/* globals app */
+/* global app */
 'use strict';
 
 // colors

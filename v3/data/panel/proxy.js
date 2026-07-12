@@ -128,7 +128,6 @@ proxy.manual = () => {
     rules: {}
   };
   const values = m.values;
-  console.log(values);
   if (values.http.host && values.http.port) {
     value.rules.proxyForHttp = {
       host: values.http.host,
@@ -202,14 +201,14 @@ app.on('change-proxy', async mode => {
   let config = {
     value: {mode}
   };
-  if (mode === 'fixed_servers') {
-    config = proxy.manual();
-  }
-  else if (mode === 'pac_script') {
-    config = await proxy.pac();
-  }
-  // set proxy
   try {
+    if (mode === 'fixed_servers') {
+      config = proxy.manual();
+    }
+    else if (mode === 'pac_script') {
+      config = await proxy.pac();
+    }
+    // set proxy
     chrome.proxy.settings.set(config, () => {
       const lastError = chrome.runtime.lastError;
       if (lastError) {
