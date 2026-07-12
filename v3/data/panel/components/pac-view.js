@@ -34,7 +34,7 @@ class PacView extends HTMLElement {
         }
         .one {
           display: grid;
-          grid-template-columns: 1fr 40px 40px 40px;
+          grid-template-columns: 1fr 40px min-content 40px 40px;
         }
         label {
           cursor: pointer;
@@ -72,6 +72,10 @@ class PacView extends HTMLElement {
           background: #52af52 url(images/ok.svg) center center no-repeat;
           background-size: 14px;
         }
+        #convert {
+          color: #fff;
+          background-color: #6e98e3;
+        }
         #remove {
           background: #eea345 url(images/no.svg) center center no-repeat;
           background-size: 22px;
@@ -91,7 +95,8 @@ class PacView extends HTMLElement {
         <label><input id="pac-1" type="radio" name="pac" checked value="href" data-mode="pac_script">URL</label>
         <form class="one" id="href-container">
           <input type="text" id="href" placeholder="http://example.com/sample.pac" for="pac-1" list="pacs" autocomplete="off" data-value="" value="">
-          <input type="button" id="reload" data-cmd="reload-pac">
+          <input type="button" id="reload" data-cmd="reload-pac" title="Force browser to reload from server">
+          <input type="button" id="convert" data-cmd="convert-to-script" value="convert" title="Convert to Script">
           <input type="button" id="remove" disabled="true" data-cmd="delete-pac">
           <input type="submit" id="apply" disabled="true" value="">
         </form>
@@ -113,6 +118,7 @@ class PacView extends HTMLElement {
     const reload = this.shadowRoot.getElementById('reload');
     const apply = this.shadowRoot.getElementById('apply');
     const remove = this.shadowRoot.getElementById('remove');
+    const convert = this.shadowRoot.getElementById('convert');
     const href = this.shadowRoot.getElementById('href');
     href.addEventListener('keyup', ({target, code}) => {
       apply.disabled = !target || target.value === target.dataset.value;
@@ -174,6 +180,7 @@ class PacView extends HTMLElement {
     });
     remove.addEventListener('click', () => this.remove());
     reload.addEventListener('click', () => this.reload());
+    convert.addEventListener('click', () => this.convert());
 
     href.onfocus = () => this.shadowRoot.getElementById('pac-1').click();
     editor.onfocus = () => this.shadowRoot.getElementById('pac-2').click();
@@ -195,26 +202,66 @@ class PacView extends HTMLElement {
       });
     });
   }
-  apply() {
-    const href = this.shadowRoot.getElementById('href');
-    const pac = href.value;
-    href.dataset.value = pac;
+  async convert() {
+    try {
+      const href = this.shadowRoot.getElementById('href');
+      const pac = href.value;
+      href.dataset.value = pac;
 
-    chrome.storage.local.set({
-      'last-pac': href.value
-    });
-    app.storage({
-      pacs: []
-    }).then(prefs => {
-      prefs.pacs.push(pac);
-      prefs.pacs = prefs.pacs.filter((p, i, l) => p && l.indexOf(p) === i);
-      chrome.storage.local.set(prefs, () => {
-        href.dispatchEvent(new Event('keyup'));
-        console.log('done');
-        app.emit('change-proxy', 'pac_script');
-        this.build();
+      await chrome.permissions.request({
+        origins: [pac]
       });
-    });
+      const r = await fetch(pac);
+      if (!r.ok) {
+        throw Error('Cannot access this resource');
+      }
+      const pacScript = await r.text();
+      this.set('script', pacScript, true);
+      console.log(pacScript);
+    }
+    catch (e) {
+      console.error(e);
+      app.emit('notify', e.message);
+    }
+  }
+  async apply() {
+    try {
+      const href = this.shadowRoot.getElementById('href');
+      const pac = href.value;
+      href.dataset.value = pac;
+
+      if (pac.startsWith('file:///')) {
+        await chrome.permissions.request({
+          origins: [pac]
+        });
+        const r = await fetch(pac);
+        if (!r.ok) {
+          throw Error('Cannot access this resource');
+        }
+        const pacScript = await r.text();
+        this.set('script', pacScript, true);
+      }
+
+      chrome.storage.local.set({
+        'last-pac': href.value
+      });
+      app.storage({
+        pacs: []
+      }).then(prefs => {
+        prefs.pacs.push(pac);
+        prefs.pacs = prefs.pacs.filter((p, i, l) => p && l.indexOf(p) === i);
+        chrome.storage.local.set(prefs, () => {
+          href.dispatchEvent(new Event('keyup'));
+          console.log('done');
+          app.emit('change-proxy', 'pac_script');
+          this.build();
+        });
+      });
+    }
+    catch (e) {
+      console.error(e);
+      app.emit('notify', e.message);
+    }
   }
   remove() {
     const href = this.shadowRoot.getElementById('href');

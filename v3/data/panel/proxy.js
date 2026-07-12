@@ -168,7 +168,7 @@ proxy.manual = () => {
 
   return {value};
 };
-proxy.pac = () => {
+proxy.pac = async () => {
   const value = {
     mode: 'pac_script',
     pacScript: {
@@ -176,8 +176,21 @@ proxy.pac = () => {
     }
   };
   const mode = document.querySelector('pac-view').mode;
+
   if (mode === 'href') {
-    value.pacScript.url = document.querySelector('pac-view').get('href');
+    const href = document.querySelector('pac-view').get('href');
+
+    // this is for backup only. Conversion to pacScript is done inside the pac component
+    if (href.startsWith('file:///')) {
+      const r = await fetch(href);
+      if (!r.ok) {
+        throw Error('Cannot read from local PAC address');
+      }
+      value.pacScript.data = await r.text();
+    }
+    else {
+      value.pacScript.url = href;
+    }
   }
   else if (mode === 'script') {
     value.pacScript.data = document.querySelector('pac-view').get('script');
@@ -185,7 +198,7 @@ proxy.pac = () => {
   return {value};
 };
 
-app.on('change-proxy', mode => {
+app.on('change-proxy', async mode => {
   let config = {
     value: {mode}
   };
@@ -193,7 +206,7 @@ app.on('change-proxy', mode => {
     config = proxy.manual();
   }
   else if (mode === 'pac_script') {
-    config = proxy.pac();
+    config = await proxy.pac();
   }
   // set proxy
   try {
@@ -214,6 +227,7 @@ app.on('change-proxy', mode => {
     });
   }
   catch (e) {
+    console.error(e);
     app.emit('notify', e.message || e);
     // change tab if necessary
     app.emit('proxy-changed', mode);

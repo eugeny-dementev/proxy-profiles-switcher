@@ -9,6 +9,9 @@
     "notifications",
     "proxy"
   ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
   "storage": {
     "managed_schema": "schema.json"
   },
