@@ -122,6 +122,7 @@ Implementation details are documented in [docs/ARCHITECTURE.md](docs/ARCHITECTUR
 - **A local destination stops opening:** add its hostname, IP address, wildcard, or CIDR range to the profile's bypass list.
 - **A proxy needs authentication:** Chrome may display its own prompt, but this extension intentionally does not store or provide credentials.
 - **A proxy endpoint times out:** verify the endpoint independently. Saving a profile does not imply that the proxy server is healthy.
+- **A page reports a tunnel or proxy connection failure:** this is a request-level browser error, not proof that Chrome failed to activate the selected profile. The extension reserves its global red status and `!` badge for proxy-setting application and control failures.
 
 ## Fork and license
 

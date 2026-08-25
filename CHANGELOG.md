@@ -6,6 +6,11 @@ The project follows semantic versioning for extension releases.
 
 ## [Unreleased]
 
+### Fixed
+
+- Request-level Chrome proxy errors no longer appear as global profile-activation failures.
+- Genuine proxy-setting application failures remain visible in the popup and toolbar badge.
+
 ## [1.0.0] - 2026-08-25
 
 ### Added

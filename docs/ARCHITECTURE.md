@@ -6,6 +6,7 @@ Proxy Profiles Switcher is a static Manifest V3 extension. It has no application
 
 - `extension/core/profiles.js` validates and normalizes profile data.
 - `extension/core/storage.js` owns the versioned `chrome.storage.local` document and short-lived runtime status.
+- `extension/core/runtime-status.js` distinguishes proxy-setting application failures from request-level browser network failures.
 - `extension/core/proxy.js` builds, applies, verifies, and matches Chrome proxy configurations.
 - `extension/core/import.js` converts current backups and compatible Proxy Switcher 0.6.x exports.
 - `extension/popup` derives current state and performs explicit one-click switching.
@@ -21,6 +22,8 @@ Proxy Profiles Switcher is a static Manifest V3 extension. It has no application
 5. The setting is read back and verified before the UI reports success.
 
 Stored selection is never treated as proof that a profile is active. Chrome's current setting is always authoritative.
+
+Chrome can emit request-level proxy errors for an individual tab or background request even while the configured proxy is active and serving other traffic. Those events are not treated as global extension failures. Only a rejected or unverifiable `chrome.proxy.settings.set()` operation is stored briefly as an application error.
 
 ## Lifecycle safety
 

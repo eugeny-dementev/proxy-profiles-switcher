@@ -3,18 +3,18 @@ import {
   STORAGE_KEY
 } from './core/constants.js';
 import {deriveProxyStatus} from './core/proxy.js';
+import {getRecentApplicationError} from './core/runtime-status.js';
 import {
   clearRuntimeStatus,
   ensureState,
   loadRuntimeStatus,
-  loadState,
-  saveRuntimeStatus
+  loadState
 } from './core/storage.js';
 
 let refreshRunning = false;
 let refreshRequested = false;
 
-async function refreshAction(options = {}) {
+async function refreshAction() {
   if (refreshRunning) {
     refreshRequested = true;
     return;
@@ -28,17 +28,23 @@ async function refreshAction(options = {}) {
       loadRuntimeStatus()
     ]);
     const status = deriveProxyStatus(setting, state.profiles);
-    const recentError = runtimeStatus &&
-      Date.now() - Number(runtimeStatus.timestamp) < 5 * 60 * 1000;
+    const applicationError = getRecentApplicationError(runtimeStatus);
+    if (runtimeStatus && !applicationError) {
+      await clearRuntimeStatus();
+    }
     let badgeText = '';
     let badgeColor = '#64748b';
     let title = 'Proxy Profiles Switcher — Direct';
 
-    if (options.forceError || recentError || !status.canControl) {
+    if (!status.canControl) {
       badgeText = '!';
       badgeColor = '#dc2626';
-      title = 'Proxy Profiles Switcher — ' +
-        (options.forceError || runtimeStatus?.message || status.controlMessage);
+      title = 'Proxy Profiles Switcher — ' + status.controlMessage;
+    }
+    else if (applicationError) {
+      badgeText = '!';
+      badgeColor = '#dc2626';
+      title = 'Proxy Profiles Switcher — ' + applicationError.message;
     }
     else if (status.activeProfileId) {
       const profile = state.profiles.find(item =>
@@ -98,17 +104,6 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.proxy.settings.onChange.addListener(() => {
   void clearRuntimeStatus();
   void refreshAction();
-});
-
-chrome.proxy.onProxyError.addListener(details => {
-  const message = details.error || details.details || 'Unknown proxy error';
-  void saveRuntimeStatus({
-    kind: 'proxy-error',
-    message,
-    fatal: Boolean(details.fatal),
-    timestamp: Date.now()
-  });
-  void refreshAction({forceError: message});
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {

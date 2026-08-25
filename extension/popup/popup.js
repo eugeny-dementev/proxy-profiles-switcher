@@ -4,9 +4,14 @@ import {
   deriveProxyStatus
 } from '../core/proxy.js';
 import {
+  createApplicationErrorStatus,
+  getRecentApplicationError
+} from '../core/runtime-status.js';
+import {
   clearRuntimeStatus,
   loadRuntimeStatus,
   loadState,
+  saveRuntimeStatus,
   saveState
 } from '../core/storage.js';
 
@@ -62,6 +67,15 @@ async function finishSwitch(message) {
   window.setTimeout(() => window.close(), 220);
 }
 
+async function reportSwitchError(error) {
+  const status = createApplicationErrorStatus(error);
+  await saveRuntimeStatus(status).catch(() => {});
+  await chrome.runtime.sendMessage({type: 'refresh-action'}).catch(() => {});
+  busy = false;
+  await render();
+  setMessage(status.message, 'error');
+}
+
 async function selectDirect() {
   if (busy) {
     return;
@@ -77,9 +91,7 @@ async function selectDirect() {
     await finishSwitch('Direct connection is active.');
   }
   catch (error) {
-    setMessage(error.message || String(error), 'error');
-    busy = false;
-    await render();
+    await reportSwitchError(error);
   }
 }
 
@@ -98,9 +110,7 @@ async function selectProfile(profile) {
     await finishSwitch(profile.name + ' is active.');
   }
   catch (error) {
-    setMessage(error.message || String(error), 'error');
-    busy = false;
-    await render();
+    await reportSwitchError(error);
   }
 }
 
@@ -154,13 +164,12 @@ export async function render() {
     elements.summary.textContent = state.profiles.length + ' saved profile' +
       (state.profiles.length === 1 ? '' : 's') + ' · local only';
 
-    const recentError = runtimeStatus &&
-      Date.now() - Number(runtimeStatus.timestamp) < 5 * 60 * 1000;
+    const applicationError = getRecentApplicationError(runtimeStatus);
     if (!status.canControl) {
       setMessage(status.controlMessage, 'error');
     }
-    else if (recentError) {
-      setMessage(runtimeStatus.message, 'error');
+    else if (applicationError) {
+      setMessage(applicationError.message, 'error');
     }
     else if (status.isDirect) {
       setMessage('Direct connection is active.');

@@ -2,6 +2,7 @@ import {rm} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import {RUNTIME_STATUS_KEY} from '../../extension/core/constants.js';
 import {
   addProfile,
   expect,
@@ -47,6 +48,40 @@ test('profile CRUD, activation, service-worker restart, and active deletion', as
   const popup = await openPopup(context, extensionId);
   await popup.getByRole('button', {name: /Work/}).click();
   await expect(popup.locator('#status')).toContainText('Work is active');
+
+  await popup.evaluate(({key, timestamp}) => chrome.storage.session.set({
+    [key]: {
+      kind: 'proxy-error',
+      message: 'net::ERR_TUNNEL_CONNECTION_FAILED',
+      timestamp
+    }
+  }), {key: RUNTIME_STATUS_KEY, timestamp: Date.now()});
+  await popup.reload();
+  await expect(popup.locator('#status')).toContainText('Work is active');
+  await expect.poll(() => popup.evaluate(() =>
+    chrome.action.getBadgeText({})
+  )).toBe('ON');
+  await expect.poll(() => popup.evaluate(
+    key => chrome.storage.session.get(key).then(values => values[key]),
+    RUNTIME_STATUS_KEY
+  )).toBeUndefined();
+
+  await popup.evaluate(({key, timestamp}) => chrome.storage.session.set({
+    [key]: {
+      kind: 'application-error',
+      message: 'Chrome rejected the setting.',
+      timestamp
+    }
+  }), {key: RUNTIME_STATUS_KEY, timestamp: Date.now()});
+  await popup.reload();
+  await expect(popup.locator('#status')).toContainText(
+    'Chrome rejected the setting.'
+  );
+  await expect.poll(() => popup.evaluate(() =>
+    chrome.action.getBadgeText({})
+  )).toBe('!');
+  await popup.evaluate(key => chrome.storage.session.remove(key), RUNTIME_STATUS_KEY);
+  await popup.reload();
 
   const setting = await popup.evaluate(() =>
     chrome.proxy.settings.get({incognito: false})

@@ -3,6 +3,8 @@ export const SCHEMA_VERSION = 1;
 export const STORAGE_KEY = 'proxyProfilesState';
 export const RUNTIME_STATUS_KEY = 'proxyProfilesRuntimeStatus';
 export const EXPORT_FORMAT = 'proxy-profiles-switcher';
+export const APPLICATION_ERROR_KIND = 'application-error';
+export const APPLICATION_ERROR_TTL_MS = 5 * 60 * 1000;
 
 export const ALLOWED_SCHEMES = Object.freeze([
   'http',
