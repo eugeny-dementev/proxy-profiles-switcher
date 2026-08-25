@@ -41,6 +41,7 @@ const elements = {
   importMode: document.getElementById('import-mode'),
   importSummary: document.getElementById('import-summary'),
   list: document.getElementById('profile-list'),
+  main: document.getElementById('page-shell'),
   name: document.getElementById('profile-name'),
   pageStatus: document.getElementById('page-status'),
   port: document.getElementById('profile-port'),
@@ -371,8 +372,13 @@ async function initialize() {
     state = await loadState();
     resetEditor();
     await refreshActiveState();
+    elements.main.inert = false;
+    elements.main.setAttribute('aria-busy', 'false');
+    elements.name.focus();
+    document.documentElement.dataset.ready = 'true';
   }
   catch (error) {
+    document.documentElement.dataset.ready = 'error';
     setPageStatus(error.message || String(error), 'error');
   }
 }

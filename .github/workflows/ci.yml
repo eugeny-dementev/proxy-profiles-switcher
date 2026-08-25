@@ -39,6 +39,14 @@ jobs:
       - name: Run isolated Chromium tests
         run: npm run test:e2e
 
+      - name: Upload Chromium failure traces
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-failure-traces
+          path: test-results/
+          if-no-files-found: ignore
+
       - name: Build distributable ZIP
         run: npm run package
 

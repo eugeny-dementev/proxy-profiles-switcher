@@ -49,7 +49,9 @@ export {expect} from '@playwright/test';
 export async function openOptions(context, extensionId) {
   const page = await context.newPage();
   await page.goto('chrome-extension://' + extensionId + '/options/options.html');
-  await page.locator('#profile-name').waitFor({state: 'visible'});
+  await page.locator('html[data-ready="true"] #profile-name').waitFor({
+    state: 'visible'
+  });
   return page;
 }
 
