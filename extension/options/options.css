@@ -1,0 +1,407 @@
+:root {
+  color-scheme: light dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #eef2f7;
+  color: #172033;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 0, rgba(37, 99, 235, 0.1), transparent 35%),
+    #eef2f7;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.page-shell {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 42px 0 64px;
+}
+
+.page-header,
+.section-heading,
+.form-actions,
+.backup-actions {
+  display: flex;
+  align-items: center;
+}
+
+.page-header {
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.eyebrow {
+  margin-bottom: 5px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.subtitle,
+.field-help,
+.backups p {
+  color: #64748b;
+}
+
+.page-status {
+  min-height: 24px;
+  margin-bottom: 10px;
+  color: #047857;
+}
+
+.page-status.error {
+  color: #b91c1c;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(440px, 1.2fr);
+  gap: 18px;
+}
+
+.card {
+  border: 1px solid #dbe3ef;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 46px rgba(15, 23, 42, 0.07);
+  padding: 22px;
+}
+
+.section-heading {
+  justify-content: space-between;
+}
+
+.count {
+  display: grid;
+  min-width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-list {
+  display: grid;
+  gap: 8px;
+}
+
+.library-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.select-profile,
+.order-button {
+  border: 1px solid #dbe3ef;
+  border-radius: 11px;
+  background: #f8fafc;
+  color: inherit;
+  cursor: pointer;
+}
+
+.select-profile {
+  min-width: 0;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.select-profile.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.row-name,
+.row-detail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-name {
+  margin-bottom: 3px;
+  font-weight: 750;
+}
+
+.row-detail {
+  color: #64748b;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
+.order-controls {
+  display: grid;
+  grid-template-columns: 28px 28px;
+  gap: 4px;
+}
+
+.order-button {
+  padding: 0;
+}
+
+.order-button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.empty-library {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  padding: 28px 18px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #172033;
+  outline: none;
+  padding: 10px 11px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-row,
+#profile-host,
+#profile-bypass {
+  margin-bottom: 4px;
+}
+
+.field-error {
+  min-height: 18px;
+  margin: 2px 0 5px;
+  color: #b91c1c;
+  font-size: 11px;
+}
+
+.field-help {
+  margin: 4px 0 0;
+  font-size: 11px;
+}
+
+.form-actions {
+  gap: 9px;
+  margin-top: 16px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 15px;
+}
+
+.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.primary:hover {
+  background: #1d4ed8;
+}
+
+.secondary {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+}
+
+.danger {
+  margin-left: auto;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.backups {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.backups h2 {
+  margin-bottom: 7px;
+}
+
+.backups p {
+  margin-bottom: 0;
+}
+
+.backup-actions {
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.backup-actions label {
+  width: 100%;
+  margin: 0;
+}
+
+.backup-actions select {
+  width: auto;
+  min-width: 245px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+dialog {
+  width: min(620px, calc(100% - 32px));
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.26);
+  padding: 24px;
+}
+
+dialog::backdrop {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.import-details {
+  max-height: 270px;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+@media (max-width: 780px) {
+  .workspace,
+  .backups {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    align-items: flex-start;
+  }
+
+  .backup-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 8% 0, rgba(37, 99, 235, 0.18), transparent 35%),
+      #0f172a;
+  }
+
+  .card,
+  dialog {
+    border-color: #334155;
+    background: rgba(30, 41, 59, 0.94);
+    color: #e2e8f0;
+  }
+
+  input,
+  select,
+  textarea,
+  .secondary,
+  .select-profile,
+  .order-button {
+    border-color: #475569;
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+
+  .select-profile.selected {
+    border-color: #60a5fa;
+    background: #172554;
+  }
+
+  label {
+    color: #cbd5e1;
+  }
+
+  .import-details {
+    border-color: #334155;
+    background: #0f172a;
+  }
+}

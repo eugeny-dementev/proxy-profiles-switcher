@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proxy Profiles Switcher settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Proxy Profiles Switcher</p>
+        <h1>Manage profiles</h1>
+        <p class="subtitle">Profiles stay on this computer and activate for regular Chrome windows.</p>
+      </div>
+      <button id="add-profile" class="primary" type="button">Add profile</button>
+    </header>
+
+    <p id="page-status" class="page-status" role="status" aria-live="polite"></p>
+
+    <div class="workspace">
+      <section class="card profile-library" aria-labelledby="library-title">
+        <div class="section-heading">
+          <h2 id="library-title">Saved profiles</h2>
+          <span id="profile-count" class="count">0</span>
+        </div>
+        <div id="profile-list" class="profile-list"></div>
+      </section>
+
+      <section class="card editor" aria-labelledby="editor-title">
+        <h2 id="editor-title">New profile</h2>
+        <form id="profile-form" novalidate>
+          <input id="profile-id" type="hidden">
+
+          <label for="profile-name">Profile name</label>
+          <input id="profile-name" name="name" type="text" maxlength="64" autocomplete="off" required>
+          <p id="name-error" class="field-error"></p>
+
+          <div class="field-row">
+            <div>
+              <label for="profile-scheme">Protocol</label>
+              <select id="profile-scheme" name="scheme">
+                <option value="http">HTTP</option>
+                <option value="https">HTTPS</option>
+                <option value="socks4">SOCKS4</option>
+                <option value="socks5">SOCKS5</option>
+              </select>
+            </div>
+            <div>
+              <label for="profile-port">Port</label>
+              <input id="profile-port" name="port" type="number" min="1" max="65535" inputmode="numeric" required>
+              <p id="port-error" class="field-error"></p>
+            </div>
+          </div>
+
+          <label for="profile-host">Host or IP address</label>
+          <input id="profile-host" name="host" type="text" maxlength="253" autocomplete="off" spellcheck="false" placeholder="127.0.0.1" required>
+          <p id="host-error" class="field-error"></p>
+
+          <label for="profile-bypass">Connect directly to these destinations</label>
+          <textarea id="profile-bypass" name="bypassList" rows="7" spellcheck="false" placeholder="One entry per line"></textarea>
+          <p class="field-help">One hostname, wildcard, IP, or CIDR range per line.</p>
+          <p id="bypassList-error" class="field-error"></p>
+
+          <div class="form-actions">
+            <button id="save-profile" class="primary" type="submit">Save profile</button>
+            <button id="cancel-edit" class="secondary" type="button">Reset</button>
+            <button id="delete-profile" class="danger hidden" type="button">Delete</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <section class="card backups" aria-labelledby="backup-title">
+      <div>
+        <h2 id="backup-title">Backup and migration</h2>
+        <p>Export this extension’s profiles or import its backup format and Proxy Switcher 0.6.x JSON exports.</p>
+      </div>
+      <div class="backup-actions">
+        <label for="import-mode">Import mode</label>
+        <select id="import-mode">
+          <option value="merge">Merge and update matching names</option>
+          <option value="replace">Replace all profiles</option>
+        </select>
+        <button id="import-button" class="secondary" type="button">Import JSON</button>
+        <button id="export-button" class="secondary" type="button">Export JSON</button>
+        <input id="import-file" class="hidden" type="file" accept=".json,application/json">
+      </div>
+    </section>
+  </main>
+
+  <dialog id="import-dialog">
+    <form method="dialog">
+      <h2>Import preview</h2>
+      <p id="import-summary"></p>
+      <div id="import-details" class="import-details"></div>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary">Cancel</button>
+        <button id="confirm-import" value="default" class="primary">Confirm import</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install bundled Chromium
+        run: npx playwright install chromium
+
+      - name: Verify tag matches manifest version
+        shell: pwsh
+        run: |
+          $manifest = Get-Content extension/manifest.json -Raw | ConvertFrom-Json
+          $expectedTag = "v$($manifest.version)"
+          if ($env:GITHUB_REF_NAME -ne $expectedTag) {
+            throw "Tag $env:GITHUB_REF_NAME does not match manifest version $expectedTag"
+          }
+
+      - name: Validate and test
+        run: npm test
+
+      - name: Validate packaged resources
+        run: npm run check
+
+      - name: Build distributable ZIP
+        run: npm run package
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = @(Get-ChildItem dist -Filter '*.zip')
+          if ($assets.Count -ne 1) {
+            throw "Expected one distributable ZIP, found $($assets.Count)"
+          }
+          gh release create $env:GITHUB_REF_NAME $assets[0].FullName `
+            --verify-tag `
+            --generate-notes `
+            --title "Proxy Profiles Switcher $env:GITHUB_REF_NAME"

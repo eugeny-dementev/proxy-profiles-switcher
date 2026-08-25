@@ -1,0 +1,31 @@
+{
+  "name": "proxy-profiles-switcher",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first Chrome proxy profile switcher.",
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/eugeny-dementev/proxy-profiles-switcher#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eugeny-dementev/proxy-profiles-switcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eugeny-dementev/proxy-profiles-switcher/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node scripts/check-extension.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test tests/unit",
+    "test:e2e": "playwright test",
+    "test:live": "node tests/smoke/live-proxies.mjs",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

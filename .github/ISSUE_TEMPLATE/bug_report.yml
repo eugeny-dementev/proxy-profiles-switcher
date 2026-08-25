@@ -1,0 +1,70 @@
+name: Bug report
+description: Report reproducible incorrect behavior.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include proxy credentials or private subscription URLs.
+
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 151
+    validations:
+      required: true
+
+  - type: dropdown
+    id: control
+    attributes:
+      label: Proxy control level shown by Chrome
+      options:
+        - Controllable by this extension
+        - Controlled by this extension
+        - Controlled by another extension
+        - Controlled by policy
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use a non-sensitive fixture endpoint when possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed proxy credentials, private URLs, and personal browsing data.
+          required: true
+        - label: I checked whether another extension or policy controls Chrome's proxy setting.
+          required: true

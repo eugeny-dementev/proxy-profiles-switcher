@@ -1,0 +1,18 @@
+Proxy Profiles Switcher
+https://github.com/eugeny-dementev/proxy-profiles-switcher
+
+This repository is a fork and derivative work of Proxy Switcher by rNeomy:
+https://github.com/rNeomy/proxy-switcher
+
+The redesign was based on upstream Proxy Switcher 0.6.8 at commit:
+e10d606d9ba131b2abb16bc2e9e1ef111f0e27c9
+https://github.com/rNeomy/proxy-switcher/commit/e10d606d9ba131b2abb16bc2e9e1ef111f0e27c9
+
+The upstream project and this derivative are distributed under the Mozilla
+Public License 2.0. The upstream proxy-setting approach informed this fork.
+The Manifest V3 architecture, local storage schema, profile-focused interface,
+import and export workflow, tests, documentation, and icon were created for
+Proxy Profiles Switcher.
+
+Proxy Profiles Switcher is independently maintained and is not affiliated with
+or endorsed by the upstream author.

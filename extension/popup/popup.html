@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proxy Profiles Switcher</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <p class="eyebrow">Browser routing</p>
+        <h1>Proxy Profiles</h1>
+      </div>
+      <button id="manage" class="icon-button" type="button" title="Manage profiles" aria-label="Manage profiles">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
+
+    <p id="status" class="status" role="status" aria-live="polite">Loading proxy state…</p>
+    <section id="profile-list" class="profile-list" aria-label="Proxy profiles"></section>
+
+    <footer>
+      <span id="summary">Stored locally</span>
+      <button id="refresh" class="text-button" type="button">Refresh</button>
+    </footer>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
