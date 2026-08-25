@@ -56,3 +56,46 @@ jobs:
           name: proxy-profiles-switcher
           path: dist/*.zip
           if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Prepare or publish release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Prepare release pull request or publish release
+        id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Download verified extension package
+        if: steps.release.outputs.release_created == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: proxy-profiles-switcher
+          path: dist
+
+      - name: Attach verified package to release
+        if: steps.release.outputs.release_created == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          asset="dist/proxy-profiles-switcher-${RELEASE_VERSION}.zip"
+          if [[ ! -f "$asset" ]]; then
+            echo "Expected release asset was not produced: $asset" >&2
+            exit 1
+          fi
+          gh release upload "$RELEASE_TAG" "$asset" --clobber

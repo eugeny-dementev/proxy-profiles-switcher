@@ -7,8 +7,15 @@ const projectDirectory = path.resolve(scriptDirectory, '..');
 const extensionDirectory = path.join(projectDirectory, 'extension');
 const manifestPath = path.join(extensionDirectory, 'manifest.json');
 const packagePath = path.join(projectDirectory, 'package.json');
+const packageLockPath = path.join(projectDirectory, 'package-lock.json');
+const releaseManifestPath = path.join(
+  projectDirectory,
+  '.release-please-manifest.json'
+);
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 const packageMetadata = JSON.parse(await readFile(packagePath, 'utf8'));
+const packageLock = JSON.parse(await readFile(packageLockPath, 'utf8'));
+const releaseManifest = JSON.parse(await readFile(releaseManifestPath, 'utf8'));
 
 const expectedPermissions = ['proxy', 'storage'];
 const actualPermissions = [...manifest.permissions].sort();
@@ -27,8 +34,17 @@ if (manifest.homepage_url !== 'https://github.com/eugeny-dementev/proxy-profiles
 if (manifest.name !== 'Proxy Profiles Switcher') {
   throw new Error('Unexpected extension name.');
 }
-if (manifest.version !== packageMetadata.version) {
-  throw new Error('Manifest and package versions must match.');
+const versions = {
+  manifest: manifest.version,
+  package: packageMetadata.version,
+  packageLock: packageLock.version,
+  packageLockRoot: packageLock.packages?.['']?.version,
+  releasePlease: releaseManifest['.']
+};
+if (new Set(Object.values(versions)).size !== 1) {
+  throw new Error(
+    'Release versions must match: ' + JSON.stringify(versions)
+  );
 }
 if (packageMetadata.license !== 'MPL-2.0') {
   throw new Error('Package metadata must preserve the MPL-2.0 license.');
@@ -46,6 +62,7 @@ const requiredProjectPaths = [
   'NOTICE',
   'PRIVACY.md',
   'SECURITY.md',
+  'release-please-config.json',
   'docs/ARCHITECTURE.md',
   'docs/BACKUP_FORMAT.md'
 ];

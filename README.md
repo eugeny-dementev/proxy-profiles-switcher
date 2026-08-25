@@ -108,7 +108,9 @@ npm run package
 
 `npm run test:live` is an explicit, optional smoke test for proxy endpoints already running on the local machine. It defaults to `http://127.0.0.1:3328` and `socks5://127.0.0.1:1080`; override them with `PROXY_PROFILE_HTTP_URL` and `PROXY_PROFILE_SOCKS_URL`. The smoke test does not start, stop, or reconfigure proxies.
 
-Packaging writes `dist/proxy-profiles-switcher-<manifest-version>.zip`. Tagged releases run the same validation and publish that ZIP through GitHub Actions.
+Packaging writes `dist/proxy-profiles-switcher-<manifest-version>.zip`. Every pull request and push to `master` runs the same validation in GitHub Actions.
+
+Release Please maintains a release pull request after release-worthy conventional commits reach `master`. It updates `CHANGELOG.md`, `package.json`, `package-lock.json`, `extension/manifest.json`, and the release manifest together. Merging that release pull request creates the SemVer tag and GitHub Release only after the default Windows verification job passes, then attaches that exact run's tested ZIP. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit types and the release lifecycle.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development contracts and pull-request expectations.
 

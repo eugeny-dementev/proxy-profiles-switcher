@@ -36,6 +36,14 @@ This repository is the GitHub fork `eugeny-dementev/proxy-profiles-switcher` of 
 
 The public branch contains source, tests, documentation, and GitHub workflows. Keep `dist`, `graphify-out`, Playwright output, normal-browser data, and local profile exports untracked.
 
+## Release automation
+
+- The default CI workflow verifies every pull request and `master` push before release automation can run.
+- Release Please maintains the release pull request from Conventional Commit history. Use `fix:`, `feat:`, or a `!` breaking-change marker for release-worthy commits.
+- Merging the generated release pull request creates the tag and GitHub Release and attaches the same workflow run's verified ZIP.
+- Keep `package.json`, `package-lock.json`, `extension/manifest.json`, and `.release-please-manifest.json` on the same version.
+- Do not create or push release tags manually except for explicit recovery work.
+
 ## Verification
 
 Before handoff run:
@@ -47,4 +55,4 @@ Before handoff run:
 
 Use npm run test:live only for isolated localhost proxy smoke tests. Do not disable or reconfigure the user's VPN, Docker proxy containers, or installed Chrome extensions.
 
-CI runs on Windows because the distributable ZIP is built by PowerShell. A `v*` tag must match `extension/manifest.json` before the release workflow is triggered.
+CI runs on Windows because the distributable ZIP is built by PowerShell. The release job runs only after that Windows verification job succeeds on `master`.
